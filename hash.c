@@ -100,6 +100,15 @@ void insert(hash_table* ht, const char* key, const char* value)
     int i = 1;
     while (current_item != NULL && current_item != &DELETED_ITEM)//the while loop, if the current item is not null mean its occupied
     {
+        if (current_item != DELETED_ITEM)
+        {
+            if (strcmp(current_item -> key, key) == 0)
+            {
+                del_item(current_item);
+                ht -> items[index] = item;
+                return;
+            }
+        }
         index = get_hash(i_item -> key, ht -> size, i); // adjusting the loop to find a new plpace in hash table using the i
         current_item = ht -> items[index]; // do another hashing to check the next potential slot 
         i++;//incrementing the i
