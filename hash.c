@@ -88,7 +88,7 @@ static int get_hash(const char* s, const int num_bucket, const int attempt)
 }//honestly idont want to explain all of these, so good luck me in the future
 
 
-//now were going to make another funct(inserting, searching, etc.)
+//now were going to implement our hash before (inserting, searching, etc.)
 
 //inserting: were iterating trhough table and insert the item, then we increment the count
 
@@ -98,7 +98,7 @@ void insert(hash_table* ht, const char* key, const char* value)
     int index = get_hash(i_item -> key, ht -> size, 0); //initializing the first hash
     item* current_item = ht -> items[index]; //checking if theres an item in current index
     int i = 1;
-    while (current_item != NULL)//the while loop, if the current item is not null mean its occupied
+    while (current_item != NULL && current_item != &DELETED_ITEM)//the while loop, if the current item is not null mean its occupied
     {
         index = get_hash(i_item -> key, ht -> size, i); // adjusting the loop to find a new plpace in hash table using the i
         current_item = ht -> items[index]; // do another hashing to check the next potential slot 
@@ -112,21 +112,45 @@ void insert(hash_table* ht, const char* key, const char* value)
 //searching: were looping trhough table just like insert, if there macth item key, were then gonna return the item value, if the loop hits null then we return null
 char* search(hash_table ht, const char* key)
 {
-    int index = get_hash(key, ht ->size, 0);
-    item* s_item = ht -> items[index];
+    int index = get_hash(key, ht ->size, 0); //intializing the index
+    item* s_item = ht -> items[index]; //making item based on the index
     int i = 1;
-    while (s_item != NULL)
+    while (s_item != NULL) // looping trhough table
     {
-        if (strcmp(s_item -> key, key == 0))
+        if (s_item != &DELETED_ITEM)
         {
-            return s_item -> value;
+            if (strcmp(s_item -> key, key) == 0) //comparing the item key with the key on item that on the table
+            {
+                return s_item -> value; 
+            }
         }
-        index = get_hash(key, ht -> size, i);
+        index = get_hash(key, ht -> size, i); //updating the index
         s_item = items[index];
-        i++
+        i++;
     }
-    return NULL;    
+    return NULL; //returning null if theres no macthing key
 }
 
+//deleting : we only mark the item on table as deleted since its too complicated to literally delete an item 
 
+static item DELETED_ITEM = {NULL, NULL}; //were nulling the key and value of deleted item
+
+void delete(hash_table ht, const char* key) 
+{
+    int index = get_hash(key, ht -> size, 0);
+    item* d_item = ht -> items[index];
+    int i = 1;
+    while (d_item != NULL)
+    {
+        if (strcmp(d_item -> key, key) == 0)
+        {
+            del_item(d_item);
+            ht -> items[index] = &DELETED_ITEM;
+        }
+        index = get_hash(key, ht -> size, i);
+        d_item = items[index];
+        i++;
+    }   
+    count--; 
+}
 
