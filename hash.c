@@ -113,7 +113,19 @@ void insert(hash_table* ht, const char* key, const char* value)
 char* search(hash_table ht, const char* key)
 {
     int index = get_hash(key, ht ->size, 0);
-    item* s_item = ht -> item
+    item* s_item = ht -> items[index];
+    int i = 1;
+    while (s_item != NULL)
+    {
+        if (strcmp(s_item -> key, key == 0))
+        {
+            return s_item -> value;
+        }
+        index = get_hash(key, ht -> size, i);
+        s_item = items[index];
+        i++
+    }
+    return NULL;    
 }
 
 
