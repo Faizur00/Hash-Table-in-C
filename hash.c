@@ -22,7 +22,7 @@ hash_table* new_ht(void)
 {
     hash_table* ht = malloc(sizeof(hash_table)) //this one gonna allocated. yeah you know what this do
     {
-        ht ->size = 10; //setting the size into 10
+        ht ->size = 11; //setting the size into 10
         ht ->count = 0; //setting the count into 0 since theres no item stored
         ht -> items = calloc((size_t)ht ->size, sizeof(item*)); //this one gonna derefrence items and make another memory with size of item and with the number of size
         return ht;
@@ -162,4 +162,3 @@ void delete(hash_table ht, const char* key)
     }   
     count--; 
 }
-
