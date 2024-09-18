@@ -4,9 +4,9 @@
 #include "hash.h"
 
 
-//this first part gonna make our base structture for our hashtable algorithm
-//were gonna make the item struct that gonna store our key and value
-//and then were gonna making the hash table with the size, counter, and pointer to our item
+// make our base structture for our hashtable algorithm
+//make the item struct that gonna store our key and value
+//making the hash table with the size, counter, and pointer to our item
 
 //this going to set our item and allocated it into another chunk of memory
 static item* new_item(const char* k , const char* v) //this one gonna declare the function
@@ -18,17 +18,55 @@ static item* new_item(const char* k , const char* v) //this one gonna declare th
 }
 
 //now were going to set our hash table
-hash_table* new_ht(void)
+static hash_table* new_sized(const int base_size)
 {
-    hash_table* ht = malloc(sizeof(hash_table)) //this one gonna allocated. yeah you know what this do
+    hash_table* ht = xmalloc(sizeof(hash_table)); 
+    ht -> base_size = base_size;
+    ht -> size = next_prime(base_size); //setting the size into base size
+
+    ht -> count = 0; //setting the count into 0 since theres no item stored
+    ht -> items = xcalloc((size_t)ht ->size, sizeof(item*)); //this one gonna derefrence items and make another memory with size of item and with the number of size
+    return ht;
+}
+
+//making funct to resize the the table
+static void resize_table (hash_table, cosnt int base_size)
+{
+    if (base_size < HT_INTIAL_BASE_SIZE)
     {
-        ht ->size = 11; //setting the size into 10
-        ht ->count = 0; //setting the count into 0 since theres no item stored
-        ht -> items = calloc((size_t)ht ->size, sizeof(item*)); //this one gonna derefrence items and make another memory with size of item and with the number of size
-        return ht;
+        return;
     }
 }
 
+//make the updater for sie of the hash table using tmp table
+hash_table* ht_new = hash_table(base_size);
+
+//inserting all element to the new table
+for (int i = 0; i< ht -> size; i++)
+{
+    items* item = ht->items[i];
+    if (item != NULL && item != &DELETED_ITEM)
+    {
+        insert(ht_new, item ->key, item -> value)
+    }
+
+//copying the info of the size and coutn to the new table
+    ht->base_size = ht_new -> base_size;
+    ht -> count = ht_new -> count;
+
+//updating the real table size 
+const int tmp_size = ht -> size;
+ht ->size = ht_new -> size;
+ht_new -> sizze = tmp_size;]
+
+item** tmp_items = ht -> items;
+ht -> items = new_ht -> items;
+new_ht -> items = tmp_items;
+
+//deleting the new table
+del_hash_table
+
+}
 //another fucntion that we need is a fucnt that can delete an item in our hashtable and also a fucntion that can delete the entire table
 //so were making a fuction that freeing memory by deleteing the hash_table and items
 
