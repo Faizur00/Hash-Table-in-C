@@ -17,7 +17,7 @@ int is_prime(const int x)
     {
         return 1;
     }
-    if ((x % 2) == 0))
+    if ((x % 2) == 0)
     {
         return 0;
     }
@@ -33,7 +33,7 @@ int is_prime(const int x)
 
 int next_prime (int x)
 {
-    while ( is_prime(x) =! 1)
+    while ( is_prime(x) != 1)
     {
         x++;
     }
