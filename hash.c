@@ -29,18 +29,19 @@ static hash_table* new_sized(const int base_size)
     return ht;
 }
 
-//making funct to resize the the table
-static void resize_table (hash_table, cosnt int base_size)
+//make the updater for sie of the hash table using tmp table
+hash_table* ht_new (void)
+{
+    return new_sized(HT_INTIAL_BASE_SIZE);
+}
+
+//making the rezise funct
+static void resize_table(hash_table, cosnt int base_size)
 {
     if (base_size < HT_INTIAL_BASE_SIZE)
     {
         return;
     }
-}
-
-//make the updater for sie of the hash table using tmp table
-hash_table* ht_new = hash_table(base_size);
-
 //inserting all element to the new table
 for (int i = 0; i< ht -> size; i++)
 {
@@ -49,10 +50,10 @@ for (int i = 0; i< ht -> size; i++)
     {
         insert(ht_new, item ->key, item -> value)
     }
-
+}
 //copying the info of the size and coutn to the new table
-    ht->base_size = ht_new -> base_size;
-    ht -> count = ht_new -> count;
+ht->base_size = ht_new -> base_size;
+ht -> count = ht_new -> count;
 
 //updating the real table size 
 const int tmp_size = ht -> size;
@@ -64,20 +65,34 @@ ht -> items = new_ht -> items;
 new_ht -> items = tmp_items;
 
 //deleting the new table
-del_hash_table
-
+del_hash_table(ht_new)
 }
 //another fucntion that we need is a fucnt that can delete an item in our hashtable and also a fucntion that can delete the entire table
 //so were making a fuction that freeing memory by deleteing the hash_table and items
 
-static void del_item(item* i) //a fucntion that we make to delete one item
+//making new resize funct with resize up and down
+static void resize_up(hash_table* ht)
+{
+    const int new_size = ht -> base_size * 2;
+    resize_table(ht, new_size);
+}
+
+static void resize_down(hash_table* ht)
+{
+    const int new_size = ht -> base_size /2;
+    resize_table(ht, new_size);
+}
+
+//making function that can delete single item in table
+static void del_item(item* i)
 {
     free(i->key); //freeing the key
     free(i->value); //freeing the value
     free(i); //freeing the item
 }
 
-void del_hash_table(hash_table* ht) //fucntion that we make to delete entire hash table
+//making function that can delete entire table
+void del_hash_table(hash_table* ht)
 {
     for (int i = 0; i < ht->size; i++)  //a loop that gonna check all the table
     {
@@ -92,9 +107,8 @@ void del_hash_table(hash_table* ht) //fucntion that we make to delete entire has
 }
 
 
-// so now were done with the basic structure of hash function, we got the item struct, the hash table, and function that can clean our item and hash table
-//the next step is the hash code so now we can do the hashing procces
-/*this code shoul do"
+//making hash code
+/*this code do:
 1. Take a string as its input and return a number between 0 and m, our desired bucket array length.
 2. return the index evenly for an average input, so we can get lower chance for collisions*/
 //at this case were gonna hashing using the polynomial rolling method that use addition and multiplication(look at the hash code function pict)
@@ -113,7 +127,7 @@ static int hash_code(char* s, const int p, const int b) //p is the prime number,
 // we have our hash code now to let us do the hashing
 
 
-/* this one is our hashing method with double hashing
+/* this one is our hashing method
 using double hashing were gonna use our hash code again after the collisions happen then return the index*/
 //or simply like this -> index = hash_a(string) + i * hash_b(string + 1) % num_buckets
 
@@ -127,11 +141,16 @@ static int get_hash(const char* s, const int num_bucket, const int attempt)
 
 
 //now were going to implement our hash before (inserting, searching, etc.)
-
 //inserting: were iterating trhough table and insert the item, then we increment the count
-
 void insert(hash_table* ht, const char* key, const char* value)
 {
+    //making sure we dont do floating number math
+    const int load = ht -> count * 100 /  ht -> size;
+    if (load > 70)
+    {
+        resize_up(ht);
+    }
+ 
     item* i_item = new_item(key, value); //creating item that store key and value
     int index = get_hash(i_item -> key, ht -> size, 0); //initializing the first hash
     item* current_item = ht -> items[index]; //checking if theres an item in current index
@@ -182,8 +201,16 @@ char* search(hash_table ht, const char* key)
 
 static item DELETED_ITEM = {NULL, NULL}; //were nulling the key and value of deleted item
 
+//making delete function that mark the item as "deleted"
 void delete(hash_table ht, const char* key) 
 {
+    //making sure we dont do floating number under 0.1 math in delete funct
+    const int load = ht -> count * 100 / ht -> size;
+    if (load < 10)
+    {
+        resize_down(ht);
+    }
+
     int index = get_hash(key, ht -> size, 0);
     item* d_item = ht -> items[index];
     int i = 1;
