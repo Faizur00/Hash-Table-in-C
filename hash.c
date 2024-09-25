@@ -7,8 +7,6 @@
 
 //defining a global variable for deleted item
 static item DELETED_ITEM = {NULL, NULL};
-
-
 // make our base structture for our hashtable algorithm
 //make the item struct that gonna store our key and value
 //making the hash table with the size, counter, and pointer to our item
@@ -231,4 +229,9 @@ void delete(hash_table* ht, const char* key)
         i++;
     }   
     ht -> count--; 
+}
+
+int main (void)
+{
+    return 0;
 }
