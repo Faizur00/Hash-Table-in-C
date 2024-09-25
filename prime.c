@@ -2,7 +2,6 @@
 #include "prime.h"
 
 
-
 //checking the prime status of int x
 //-1 == unditified
 // 0 == not a prime number

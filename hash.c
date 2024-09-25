@@ -1,7 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "hash.h"
+#include "prime.h"
+
+//defining a global variable for deleted item
+static item DELETED_ITEM = {NULL, NULL};
 
 
 // make our base structture for our hashtable algorithm
@@ -20,52 +25,54 @@ static item* new_item(const char* k , const char* v) //this one gonna declare th
 //now were going to set our hash table
 static hash_table* new_sized(const int base_size)
 {
-    hash_table* ht = xmalloc(sizeof(hash_table)); 
+    hash_table* ht = malloc(sizeof(hash_table)); 
     ht -> base_size = base_size;
-    ht -> size = next_prime(base_size); //setting the size into base size
+    ht -> base_size = next_prime(base_size); //setting the size into base size
 
     ht -> count = 0; //setting the count into 0 since theres no item stored
-    ht -> items = xcalloc((size_t)ht ->size, sizeof(item*)); //this one gonna derefrence items and make another memory with size of item and with the number of size
+    ht -> items = calloc((size_t)ht ->base_size, sizeof(item*)); //this one gonna derefrence items and make another memory with size of item and with the number of size
     return ht;
 }
 
 //make the updater for sie of the hash table using tmp table
-hash_table* ht_new (void)
+hash_table* ht_new(void)
 {
-    return new_sized(HT_INTIAL_BASE_SIZE);
+    return new_sized(HT_INITIAL_BASE_SIZE);
 }
 
 //making the rezise funct
-static void resize_table(hash_table, cosnt int base_size)
+static void resize_table(hash_table* ht, const int base_size)
 {
-    if (base_size < HT_INTIAL_BASE_SIZE)
+    if (base_size < HT_INITIAL_BASE_SIZE)
     {
         return;
     }
 //inserting all element to the new table
-for (int i = 0; i< ht -> size; i++)
+for (int i = 0; i< ht -> base_size; i++)
 {
-    items* item = ht->items[i];
+    item* item = ht->items[i];
     if (item != NULL && item != &DELETED_ITEM)
     {
-        insert(ht_new, item ->key, item -> value)
+        hash_table* new_ht = ht_new();
+        insert(new_ht, item ->key, item -> value);
     }
 }
 //copying the info of the size and coutn to the new table
-ht->base_size = ht_new -> base_size;
-ht -> count = ht_new -> count;
+hash_table* new_ht = ht_new();
+ht -> base_size = new_ht -> base_size;
+ht -> count = new_ht -> count;
 
 //updating the real table size 
-const int tmp_size = ht -> size;
-ht ->size = ht_new -> size;
-ht_new -> sizze = tmp_size;]
+const int tmp_size = ht -> base_size;
+ht ->base_size = new_ht -> base_size;
+new_ht -> base_size = tmp_size;
 
 item** tmp_items = ht -> items;
 ht -> items = new_ht -> items;
 new_ht -> items = tmp_items;
 
 //deleting the new table
-del_hash_table(ht_new)
+del_hash_table(new_ht);
 }
 //another fucntion that we need is a fucnt that can delete an item in our hashtable and also a fucntion that can delete the entire table
 //so were making a fuction that freeing memory by deleteing the hash_table and items
@@ -91,10 +98,10 @@ static void del_item(item* i)
     free(i); //freeing the item
 }
 
-//making function that can delete entire table
-void del_hash_table(hash_table* ht)
+void del_hash_table(hash_table* ht)//making function that can delete entire table
+
 {
-    for (int i = 0; i < ht->size; i++)  //a loop that gonna check all the table
+    for (int i = 0; i < ht->base_size; i++)  //a loop that gonna check all the table
     {
         item* checker = ht->items[i]; //declareng variable to make the checker faster
         if (checker != NULL) //if we having a non null/ if we having an item in our table
@@ -113,14 +120,14 @@ void del_hash_table(hash_table* ht)
 2. return the index evenly for an average input, so we can get lower chance for collisions*/
 //at this case were gonna hashing using the polynomial rolling method that use addition and multiplication(look at the hash code function pict)
 
-static int hash_code(char* s, const int p, const int b) //p is the prime number, b is the bucket size
+static int hash_code(const char* s, const int prime, const int bucket) //p is the prime number, b is the bucket size
 {
     long hash = 0; //variable that were gonna return later
     const int string_len = strlen(s); //string length for the formula
     for (int i = 0; i < string_len; i++) //loop for the summation formula
     {
-        hash += (long) pow(p, string_len - (i+1)) * s[i]; //the formula
-        hash = hash % b; //were taking the modulo so were having integer that never more than our bucket size
+        hash += (long) pow(prime, string_len - (i+1)) * s[i]; //the formula
+        hash = hash % bucket; //were taking the modulo so were having integer that never more than our bucket size
     }
     return (int)hash; //returning hash (obviusly)
 }
@@ -135,7 +142,7 @@ static int get_hash(const char* s, const int num_bucket, const int attempt)
 {
     const int hash_a = hash_code(s, HT_PRIME_1, num_bucket);
     const int hash_b = hash_code(s, HT_PRIME_2, num_bucket);
-    unsigned int index = (hash_a + (attempt * (hash_b + 1))) % num_buckets;
+    int index = (hash_a + (attempt * (hash_b + 1))) % num_bucket; 
     return index;
 }//honestly idont want to explain all of these, so good luck me in the future
 
@@ -145,28 +152,28 @@ static int get_hash(const char* s, const int num_bucket, const int attempt)
 void insert(hash_table* ht, const char* key, const char* value)
 {
     //making sure we dont do floating number math
-    const int load = ht -> count * 100 /  ht -> size;
+    const int load = ht -> count * 100 /  ht -> base_size;
     if (load > 70)
     {
         resize_up(ht);
     }
  
     item* i_item = new_item(key, value); //creating item that store key and value
-    int index = get_hash(i_item -> key, ht -> size, 0); //initializing the first hash
+    int index = get_hash(i_item -> key, ht -> base_size, 0); //initializing the first hash
     item* current_item = ht -> items[index]; //checking if theres an item in current index
     int i = 1;
     while (current_item != NULL && current_item != &DELETED_ITEM)//the while loop, if the current item is not null mean its occupied
     {
-        if (current_item != DELETED_ITEM)
+        if (current_item != &DELETED_ITEM)
         {
             if (strcmp(current_item -> key, key) == 0)
             {
                 del_item(current_item);
-                ht -> items[index] = item;
+                ht -> items[index] = i_item;
                 return;
             }
         }
-        index = get_hash(i_item -> key, ht -> size, i); // adjusting the loop to find a new plpace in hash table using the i
+        index = get_hash(i_item -> key, ht -> base_size, i); // adjusting the loop to find a new plpace in hash table using the i
         current_item = ht -> items[index]; // do another hashing to check the next potential slot 
         i++;//incrementing the i
     }
@@ -176,9 +183,9 @@ void insert(hash_table* ht, const char* key, const char* value)
 
 
 //searching: were looping trhough table just like insert, if there macth item key, were then gonna return the item value, if the loop hits null then we return null
-char* search(hash_table ht, const char* key)
+char* search(hash_table* ht, const char* key)
 {
-    int index = get_hash(key, ht ->size, 0); //intializing the index
+    int index = get_hash(key, ht->base_size, 0); //intializing the index
     item* s_item = ht -> items[index]; //making item based on the index
     int i = 1;
     while (s_item != NULL) // looping trhough table
@@ -190,8 +197,8 @@ char* search(hash_table ht, const char* key)
                 return s_item -> value; 
             }
         }
-        index = get_hash(key, ht -> size, i); //updating the index
-        s_item = items[index];
+        index = get_hash(key, ht -> base_size, i); //updating the index
+        s_item = ht -> items[index];
         i++;
     }
     return NULL; //returning null if theres no macthing key
@@ -199,19 +206,17 @@ char* search(hash_table ht, const char* key)
 
 //deleting : we only mark the item on table as deleted since its too complicated to literally delete an item 
 
-static item DELETED_ITEM = {NULL, NULL}; //were nulling the key and value of deleted item
-
 //making delete function that mark the item as "deleted"
-void delete(hash_table ht, const char* key) 
+void delete(hash_table* ht, const char* key) 
 {
     //making sure we dont do floating number under 0.1 math in delete funct
-    const int load = ht -> count * 100 / ht -> size;
+    const int load = ht -> count * 100 / ht -> base_size;
     if (load < 10)
     {
         resize_down(ht);
     }
 
-    int index = get_hash(key, ht -> size, 0);
+    int index = get_hash(key, ht -> base_size, 0);
     item* d_item = ht -> items[index];
     int i = 1;
     while (d_item != NULL)
@@ -221,9 +226,9 @@ void delete(hash_table ht, const char* key)
             del_item(d_item);
             ht -> items[index] = &DELETED_ITEM;
         }
-        index = get_hash(key, ht -> size, i);
-        d_item = items[index];
+        index = get_hash(key, ht -> base_size, i);
+        d_item = ht -> items[index];
         i++;
     }   
-    count--; 
+    ht -> count--; 
 }
