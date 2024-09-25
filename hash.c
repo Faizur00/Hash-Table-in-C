@@ -229,3 +229,8 @@ void delete(hash_table* ht, const char* key)
     }   
     count--; 
 }
+
+int main (void)
+{
+    return 0;
+}
