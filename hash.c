@@ -3,6 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include "hash.h"
+#include "prime.h"
 
 //defining a global variable for deleted item
 static item DELETED_ITEM = {NULL, NULL};
@@ -227,7 +228,7 @@ void delete(hash_table* ht, const char* key)
         d_item = ht -> items[index];
         i++;
     }   
-    count--; 
+    ht -> count--; 
 }
 
 int main (void)
