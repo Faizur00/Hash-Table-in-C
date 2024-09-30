@@ -26,7 +26,7 @@ hash_table* ht_new(void);
 //declaring all constant in fucntion
 #ifndef HASH_H
 #define HASH_H
-#define HT_INITIAL_BASE_SIZE 100
-#define HT_PRIME_1 61
-#define HT_PRIME_2 53
+#define HT_INITIAL_BASE_SIZE 6
+#define HT_PRIME_1 3
+#define HT_PRIME_2 2
 #endif

@@ -46,7 +46,7 @@ static void resize_table(hash_table* ht, const int base_size)
         return;
     }
 //inserting all element to the new table
-for (int i = 0; i< ht -> base_size; i++)
+for (int i = 0; i < ht -> base_size; i++)
 {
     item* item = ht->items[i];
     if (item != NULL && item != &DELETED_ITEM)
@@ -139,8 +139,12 @@ using double hashing were gonna use our hash code again after the collisions hap
 static int get_hash(const char* s, const int num_bucket, const int attempt)
 {
     const int hash_a = hash_code(s, HT_PRIME_1, num_bucket);
-    const int hash_b = hash_code(s, HT_PRIME_2, num_bucket);
-    int index = (hash_a + (attempt * (hash_b + 1))) % num_bucket; 
+    int hash_b = hash_code(s, HT_PRIME_2, num_bucket);
+    if (hash_b == 0)
+    {
+        hash_b = 1;
+    }
+    int index = (hash_a + attempt * hash_b) % num_bucket; 
     return index;
 }//honestly idont want to explain all of these, so good luck me in the future
 
