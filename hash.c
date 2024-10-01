@@ -41,6 +41,7 @@ hash_table* ht_new(void)
 //making the rezise funct
 static void resize_table(hash_table* ht, const int base_size)
 {
+    hash_table* new_ht = ht_new();
     if (base_size < HT_INITIAL_BASE_SIZE)
     {
         return;
@@ -48,15 +49,13 @@ static void resize_table(hash_table* ht, const int base_size)
 //inserting all element to the new table
 for (int i = 0; i < ht -> base_size; i++)
 {
-    item* item = ht->items[i];
-    if (item != NULL && item != &DELETED_ITEM)
+    item* r_item = ht->items[i];
+    if (r_item != NULL && r_item != &DELETED_ITEM)
     {
-        hash_table* new_ht = ht_new();
-        insert(new_ht, item ->key, item -> value);
+        insert(new_ht, r_item ->key, r_item -> value);
     }
 }
 //copying the info of the size and coutn to the new table
-hash_table* new_ht = ht_new();
 ht -> base_size = new_ht -> base_size;
 ht -> count = new_ht -> count;
 
@@ -85,7 +84,7 @@ static void resize_up(hash_table* ht)
 static void resize_down(hash_table* ht)
 {
     const int new_size = ht -> base_size /2;
-    resize_table(ht, new_size);
+   resize_table(ht, new_size);
 }
 
 //making function that can delete single item in table

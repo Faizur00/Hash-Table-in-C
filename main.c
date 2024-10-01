@@ -9,7 +9,7 @@ int main (void)
     insert(ht, "city", "mks");
     insert(ht, "age", "19");
     insert(ht, "drink", "coke");
-    insert(ht, "food", "nasgor");
+    insert(ht, "food", "burger");
     insert(ht, "last", "last");
 
     for (int i = 0; i < ht -> base_size; i ++)
