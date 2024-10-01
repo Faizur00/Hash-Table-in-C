@@ -25,10 +25,10 @@ static hash_table* new_sized(const int base_size)
 {
     hash_table* ht = malloc(sizeof(hash_table)); 
     ht -> base_size = base_size;
-    ht -> base_size = next_prime(base_size); //setting the size into base size
+    ht -> base_size = next_prime(base_size); //setting the size into base size next prime 
 
     ht -> count = 0; //setting the count into 0 since theres no item stored
-    ht -> items = calloc((size_t)ht ->base_size, sizeof(item*)); //this one gonna derefrence items and make another memory with size of item and with the number of size
+    ht -> items = calloc((size_t) ht->base_size, sizeof(item*)); //this one gonna derefrence items and make another memory with size of item and with the number of size
     return ht;
 }
 
@@ -41,15 +41,15 @@ hash_table* ht_new(void)
 //making the rezise funct
 static void resize_table(hash_table* ht, const int base_size)
 {
-    hash_table* new_ht = ht_new();
     if (base_size < HT_INITIAL_BASE_SIZE)
     {
         return;
     }
 //inserting all element to the new table
+hash_table* new_ht = new_sized(base_size);
 for (int i = 0; i < ht -> base_size; i++)
 {
-    item* r_item = ht->items[i];
+    item* r_item = ht->items[i];    
     if (r_item != NULL && r_item != &DELETED_ITEM)
     {
         insert(new_ht, r_item ->key, r_item -> value);
@@ -67,6 +67,7 @@ new_ht -> base_size = tmp_size;
 item** tmp_items = ht -> items;
 ht -> items = new_ht -> items;
 new_ht -> items = tmp_items;
+return;
 
 //deleting the new table
 del_hash_table(new_ht);
@@ -158,7 +159,6 @@ void insert(hash_table* ht, const char* key, const char* value)
     {
         resize_up(ht);
     }
- 
     item* i_item = new_item(key, value); //creating item that store key and value
     int index = get_hash(i_item -> key, ht -> base_size, 0); //initializing the first hash
     item* current_item = ht -> items[index]; //checking if theres an item in current index
