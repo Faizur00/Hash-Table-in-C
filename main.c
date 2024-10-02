@@ -4,15 +4,18 @@
 
 int main (void)
 {   
-    hash_table* ht = ht_new();
-    insert(ht, "name", "faiz");
-    insert(ht, "city", "mks");
-    insert(ht, "age", "19");
-    insert(ht, "drink", "coke");
-    insert(ht, "food", "burger");    
+    hash_table* ht = ht_new();   
     insert(ht, "num1", "one");
     insert(ht, "num2", "two");
     insert(ht, "num3", "trhee");
+    insert(ht, "num4", "four");
+    insert(ht, "num5", "five");
+    insert(ht, "num6", "six");
+    insert(ht, "num7", "seven");
+    insert(ht, "num8", "eight");
+    insert(ht, "num9", "nine");
+    printf("\n");
+
 
 
     for (int i = 0; i < ht -> base_size; i ++)
@@ -22,4 +25,5 @@ int main (void)
             printf("%s  ", ht->items[i]-> value);
         }
     }
+    printf("\nsize now is %i \n",ht -> base_size);
 }
